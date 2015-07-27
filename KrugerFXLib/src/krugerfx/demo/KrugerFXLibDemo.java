@@ -18,10 +18,11 @@ package krugerfx.demo;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import krugerfx.scene.control.StageButtons;
-import krugerfx.scene.control.StageButtonsType;
+
+import krugerfx.scene.ShadedScene;
 
 /**
  *
@@ -32,15 +33,18 @@ public class KrugerFXLibDemo extends Application {
     @Override
     public void start(Stage stage) {
 
-        StageButtons sb = new StageButtons();
+//        StageButtons sb = new StageButtons();
+        Pane p = new Pane();
+//        p.setStyle("-fx-background-color: orange;");
+//        Scene scene = new Scene(p);
+        ShadedScene scene = new ShadedScene(p, 600, 400, Color.AQUA, Color.BLACK, 127);
+        scene.setShadowColor(Color.BLUEVIOLET);
+        scene.setShadowRadius(150);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(sb);
-
-        Scene scene = new Scene(root, 600, 400);
-
-        stage.setTitle("KrugerFX Library Demo - StageButtons");
+        stage.setTitle("KrugerFX Library Demo - ShadedScene");
         stage.setScene(scene);
+        stage.centerOnScreen();
+//        stage.initStyle(StageStyle.TRANSPARENT);
         stage.show();
     }
 

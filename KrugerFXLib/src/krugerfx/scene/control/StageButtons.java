@@ -17,8 +17,8 @@
 package krugerfx.scene.control;
 
 import java.util.Locale;
-import javafx.application.Platform;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -266,7 +266,7 @@ public class StageButtons extends Button {
         }
     }
 
-    public class MinimizeButton extends StageButton {
+    private class MinimizeButton extends StageButton {
 
         private void minimize() {
             Stage stage = (Stage) getScene().getWindow();
@@ -297,7 +297,7 @@ public class StageButtons extends Button {
         }
     }
 
-    public class MaximizeButton extends StageButton {
+    private class MaximizeButton extends StageButton {
 
         private BoundingBox savedBounds;
         private boolean maximized = false;
@@ -349,7 +349,7 @@ public class StageButtons extends Button {
         }
     }
 
-    public class FullscreenButton extends StageButton {
+    private class FullscreenButton extends StageButton {
 
         private void setFullscreen(boolean value) {
             Stage stage = (Stage) getScene().getWindow();
