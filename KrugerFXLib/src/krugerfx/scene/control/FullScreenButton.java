@@ -25,12 +25,12 @@ import javafx.stage.Stage;
  *
  * @author kleberkruger
  */
-public class FullscreenButton extends StageButton {
+public class FullScreenButton extends StageButton {
 
     /**
      * Creates a {@code FullscreenButton}.
      */
-    public FullscreenButton() {
+    public FullScreenButton() {
         super();
     }
 
@@ -39,11 +39,11 @@ public class FullscreenButton extends StageButton {
      *
      * @param graphic
      */
-    public FullscreenButton(Node graphic) {
+    public FullScreenButton(Node graphic) {
         super(graphic);
     }
 
-    private void setFullscreen(boolean value) {
+    private void setFullScreen(boolean value) {
         Stage stage = (Stage) getScene().getWindow();
         stage.setFullScreen(value);
     }
@@ -53,7 +53,7 @@ public class FullscreenButton extends StageButton {
         final Stage stage = (Stage) getScene().getWindow();
         // Invoke runLater even if it's on EDT: Crash apps on Mac?
         Platform.runLater(() -> {
-            setFullscreen(!stage.isFullScreen());
+            setFullScreen(!stage.isFullScreen());
         });
     }
 
@@ -62,11 +62,11 @@ public class FullscreenButton extends StageButton {
         return StageButtonType.FULLSCREEN;
     }
 
-    public final boolean isFullscreen() {
+    public final boolean isFullScreen() {
         return isActuated();
     }
 
-    public final ReadOnlyBooleanProperty fullscreenProperty() {
+    public final ReadOnlyBooleanProperty fullScreenProperty() {
         return actuatedProperty();
     }
 }

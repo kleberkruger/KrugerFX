@@ -71,6 +71,8 @@ public abstract class StageButton extends Button {
         });
 
         registerPseudoClass();
+
+        // TODO: Utilizar os próprios listeners, propriedades e funções do Stage para fechar, minimizar, maximizar e fullscreen
     }
 
     private void addResizeListener() {
@@ -117,10 +119,30 @@ public abstract class StageButton extends Button {
 
     public final boolean isActuated() {
         return actuated == null ? false : actuated.get();
+//        switch (getType()) {
+//            case MINIMIZE:
+//                return ((Stage) getScene().getWindow()).isIconified();
+//            case MAXIMIZE:
+//                return ((Stage) getScene().getWindow()).isMaximized();
+//            case FULLSCREEN:
+//                return ((Stage) getScene().getWindow()).isFullScreen();
+//            default:
+//                return actuated == null ? false : actuated.get();
+//        }
     }
 
     public final ReadOnlyBooleanProperty actuatedProperty() {
         return actuatedPropertyImpl().getReadOnlyProperty();
+//        switch (getType()) {
+//            case MINIMIZE:
+//                return ((Stage) getScene().getWindow()).iconifiedProperty();
+//            case MAXIMIZE:
+//                return ((Stage) getScene().getWindow()).maximizedProperty();
+//            case FULLSCREEN:
+//                return ((Stage) getScene().getWindow()).fullScreenProperty();
+//            default:
+//                return actuatedPropertyImpl().getReadOnlyProperty();
+//        }
     }
 
     private ReadOnlyBooleanWrapper actuatedPropertyImpl() {

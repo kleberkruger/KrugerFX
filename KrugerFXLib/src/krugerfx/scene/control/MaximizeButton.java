@@ -21,8 +21,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import krugerfx.scene.ShadedScene;
 
 /**
  *
@@ -61,7 +63,16 @@ public class MaximizeButton extends StageButton {
 
     @Override
     protected void action() {
-        // TODO Implementar corretamente o que deverá ser feito caso o Stage esteja em fullscreen.
+        // TODO Implementar corretamente o que deverá ser feito caso o Stage esteja em fullscreen.   
+//        Scene scene = getScene();
+//        if (scene instanceof ShadedScene) {
+//            ((ShadedScene) scene).setMaximized(!((ShadedScene) scene).isMaximized()); // Não funciona!!! Bug em Mac OS X
+//        } else {
+//            Stage stage = (Stage) scene.getWindow();
+//            stage.setMaximized(!stage.isMaximized());
+//        }
+        
+        // Implementação antiga
         Stage stage = (Stage) getScene().getWindow();
 
         if (maximized) {
@@ -69,16 +80,19 @@ public class MaximizeButton extends StageButton {
             savedBounds = null;
             maximized = false;
         } else {
+            Scene scene = getScene();
+            double d = scene instanceof ShadedScene ? ((ShadedScene) scene).getShadowRadius() : 0;
+
             ObservableList<Screen> screensForRectangle = Screen.getScreensForRectangle(
                     stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
             Screen screen = screensForRectangle.get(0);
             Rectangle2D visualBounds = screen.getVisualBounds();
             savedBounds = new BoundingBox(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
 //            undecorator.setShadow(false);
-            stage.setX(visualBounds.getMinX());
-            stage.setY(visualBounds.getMinY());
-            stage.setWidth(visualBounds.getWidth());
-            stage.setHeight(visualBounds.getHeight());
+            stage.setX(visualBounds.getMinX() - d);
+            stage.setY(visualBounds.getMinY() - d);
+            stage.setWidth(visualBounds.getWidth() + d * 2);
+            stage.setHeight(visualBounds.getHeight() + d * 2);
             maximized = true;
         }
     }

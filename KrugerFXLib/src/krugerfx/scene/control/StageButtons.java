@@ -26,6 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Skin;
 import javafx.stage.Screen;
@@ -33,6 +34,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import krugerfx.internal.scene.control.skin.StageButtonsSkin;
+import krugerfx.scene.ShadedScene;
 
 /**
  *
@@ -45,7 +47,7 @@ public class StageButtons extends Button {
     private final CloseButton closeButton = new CloseButton();
     private final MinimizeButton minimizeButton = new MinimizeButton();
     private final MaximizeButton maximizeButton = new MaximizeButton();
-    private final FullscreenButton fullscreenButton = new FullscreenButton();
+    private final FullScreenButton fullscreenButton = new FullScreenButton();
 
     private final ObservableList<StageButton> buttons = FXCollections.<StageButton>observableArrayList();
 
@@ -62,13 +64,13 @@ public class StageButtons extends Button {
      * @param type
      */
     public StageButtons(StageButtonsType type) {
-        typeProperty().setValue(type);
+        setType(type);
         initialize();
     }
 
     private void initialize() {
         getStyleClass().setAll("stage-buttons");
-        setButtonsList(typeProperty().get());
+        setButtonsList(getType());
 //        typeProperty().addListener((ObservableValue<? extends StageButtonsType> observable, StageButtonsType oldValue, StageButtonsType newValue) -> {
 //            if (newValue != oldValue) {
 //                setButtonsList(newValue);
@@ -141,6 +143,12 @@ public class StageButtons extends Button {
                 getSimpleName() + ".css").toExternalForm();
     }
 
+    private StageButtonsType getDefaultType() {
+        return osName.contains("windows")
+                ? StageButtonsType.MINIMIZE_MAXIMIZE_CLOSE
+                : StageButtonsType.CLOSE_MINIMIZE_MAXIMIZE;
+    }
+
     private ObjectProperty<StageButtonsType> type;
 
     /**
@@ -150,9 +158,7 @@ public class StageButtons extends Button {
      */
     public final ObjectProperty<StageButtonsType> typeProperty() {
         if (type == null) {
-            type = new SimpleObjectProperty<>(osName.contains("windows")
-                    ? StageButtonsType.MINIMIZE_MAXIMIZE_CLOSE
-                    : StageButtonsType.CLOSE_MINIMIZE_MAXIMIZE);
+            type = new SimpleObjectProperty<>(StageButtons.this, "type", getDefaultType());
         }
         return type;
     }
@@ -161,14 +167,14 @@ public class StageButtons extends Button {
      * @return the type
      */
     public final StageButtonsType getType() {
-        return typeProperty().getValue();
+        return type == null ? getDefaultType() : type.get();
     }
 
     /**
      * @param type the type to set
      */
     public final void setType(StageButtonsType type) {
-        this.typeProperty().setValue(type);
+        this.typeProperty().set(type);
     }
 
     private ObjectProperty<StageButtonsStyle> style;
@@ -203,28 +209,28 @@ public class StageButtons extends Button {
      * @return the close button
      */
     public final Button getCloseButton() {
-        return typeProperty().getValue().hasClose() ? closeButton : null;
+        return getType().hasClose() ? closeButton : null;
     }
 
     /**
      * @return the minimize button
      */
     public final Button getMinimizeButton() {
-        return typeProperty().getValue().hasMinimize() ? minimizeButton : null;
+        return getType().hasMinimize() ? minimizeButton : null;
     }
 
     /**
      * @return the maximize button
      */
     public final Button getMaximizeButton() {
-        return typeProperty().getValue().hasMaximize() ? maximizeButton : null;
+        return getType().hasMaximize() ? maximizeButton : null;
     }
 
     /**
      * @return the fullscreen button
      */
     public final Button getFullscreenButton() {
-        return typeProperty().getValue().hasFullscreen() ? fullscreenButton : null;
+        return getType().hasFullscreen() ? fullscreenButton : null;
     }
 
     /**
@@ -240,7 +246,7 @@ public class StageButtons extends Button {
     public final ObservableList<StageButton> getButtons() {
         return FXCollections.unmodifiableObservableList(buttons);
     }
-    
+
     //<editor-fold defaultstate="collapsed" desc="Private classes">
     private class CloseButton extends StageButton {
 
@@ -314,6 +320,16 @@ public class StageButtons extends Button {
 
         @Override
         protected void action() {
+            // TODO Implementar corretamente o que deverá ser feito caso o Stage esteja em fullscreen.
+//            Scene scene = getScene();
+//            if (scene instanceof ShadedScene) {
+//                ((ShadedScene) scene).setMaximized(!((ShadedScene) scene).isMaximized());
+//            } else {
+//                Stage stage = (Stage) scene.getWindow();
+//                stage.setMaximized(!stage.isMaximized());
+//            }
+
+            // Implementação antiga
             Stage stage = (Stage) getScene().getWindow();
 
             if (maximized) {
@@ -321,16 +337,19 @@ public class StageButtons extends Button {
                 savedBounds = null;
                 maximized = false;
             } else {
+                Scene scene = getScene();
+                double d = scene instanceof ShadedScene ? ((ShadedScene) scene).getShadowRadius() : 0;
+
                 ObservableList<Screen> screensForRectangle = Screen.getScreensForRectangle(
                         stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
                 Screen screen = screensForRectangle.get(0);
                 Rectangle2D visualBounds = screen.getVisualBounds();
                 savedBounds = new BoundingBox(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
 //                undecorator.setShadow(false);
-                stage.setX(visualBounds.getMinX());
-                stage.setY(visualBounds.getMinY());
-                stage.setWidth(visualBounds.getWidth());
-                stage.setHeight(visualBounds.getHeight());
+                stage.setX(visualBounds.getMinX() - d);
+                stage.setY(visualBounds.getMinY() - d);
+                stage.setWidth(visualBounds.getWidth() + d * 2);
+                stage.setHeight(visualBounds.getHeight() + d * 2);
                 maximized = true;
             }
         }
@@ -349,9 +368,9 @@ public class StageButtons extends Button {
         }
     }
 
-    private class FullscreenButton extends StageButton {
+    private class FullScreenButton extends StageButton {
 
-        private void setFullscreen(boolean value) {
+        private void setFullScreen(boolean value) {
             Stage stage = (Stage) getScene().getWindow();
             stage.setFullScreen(value);
         }
@@ -361,7 +380,7 @@ public class StageButtons extends Button {
             final Stage stage = (Stage) getScene().getWindow();
             // Invoke runLater even if it's on EDT: Crash apps on Mac
             Platform.runLater(() -> {
-                setFullscreen(!stage.isFullScreen());
+                setFullScreen(!stage.isFullScreen());
             });
         }
 
@@ -370,11 +389,11 @@ public class StageButtons extends Button {
             return StageButtonType.FULLSCREEN;
         }
 
-        public final boolean isFullscreen() {
+        public final boolean isFullScreen() {
             return isActuated();
         }
 
-        public final ReadOnlyBooleanProperty fullscreenProperty() {
+        public final ReadOnlyBooleanProperty fullScreenProperty() {
             return actuatedProperty();
         }
     }

@@ -17,8 +17,9 @@
 package krugerfx.demo;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -34,18 +35,51 @@ public class KrugerFXLibDemo extends Application {
     public void start(Stage stage) {
 
 //        StageButtons sb = new StageButtons();
-        Pane p = new Pane();
-//        p.setStyle("-fx-background-color: orange;");
+        HBox root = new HBox();
+        
+        Button b1 = new Button();
+        b1.setOnAction((ActionEvent event) -> {
+            ((Stage)((Button)event.getSource()).getScene().getWindow()).close();
+        });
+        Button b2 = new Button();
+        b2.setOnAction((ActionEvent event) -> {
+            Stage st = ((Stage)((Button)event.getSource()).getScene().getWindow());
+            st.setIconified(!st.isIconified());
+        });
+        Button b3 = new Button();
+        b3.setOnAction((ActionEvent event) -> {
+            Stage st = ((Stage)((Button)event.getSource()).getScene().getWindow());
+            st.setMaximized(!st.isMaximized());
+        });
+        Button b4 = new Button();
+        b4.setOnAction((ActionEvent event) -> {
+            Stage st = ((Stage)((Button)event.getSource()).getScene().getWindow());
+            st.setFullScreen(!st.isFullScreen());
+        });
+        
+        root.getChildren().addAll(b1, b2, b3, b4);
+        root.setStyle("-fx-background-color: transparent;");
 //        Scene scene = new Scene(p);
-        ShadedScene scene = new ShadedScene(p, 600, 400, Color.AQUA, Color.BLACK, 127);
-        scene.setShadowColor(Color.BLUEVIOLET);
-        scene.setShadowRadius(150);
-
+        ShadedScene scene = new ShadedScene(root, 600, 400, Color.rgb(128, 128, 128, 0.5), Color.BLACK, 10);
+//        Scene scene = new Scene(root, 200, 200);
+//        scene.setShadowRadius(120);
+//        scene.setResizable(true);
+//        scene.shadowRadiusProperty().set(150);
+//        scene.setRoot_(new Button("botao")); // Está cinza por causa deste botão!!!
+        scene.setIconified(true);
+        
         stage.setTitle("KrugerFX Library Demo - ShadedScene");
         stage.setScene(scene);
         stage.centerOnScreen();
-//        stage.initStyle(StageStyle.TRANSPARENT);
+//        scene.setShadowRadius(100);
+        
+//        scene.setFill(Color.ROYALBLUE);
+        
         stage.show();
+//        scene.setShadowRadius(15);
+        
+//        Scene s = new Scene(p);
+//        s.effectiveNodeOrientationProperty();
     }
 
     /**
